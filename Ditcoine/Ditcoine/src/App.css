@@ -1,0 +1,50 @@
+#Nav a:hover{
+    background-color: whitesmoke;
+}
+
+
+#card:hover{
+    border: 1px solid #0026ff;
+    padding: 53px 2px;
+}
+#card{
+    animation-name: cardA;
+    animation-duration: 2s;
+    animation-fill-mode: initial;
+    animation-play-state: running;
+}
+#comingSoon{
+        animation-name: comingSo;
+        animation-duration: 2s;
+        animation-fill-mode: initial;
+        animation-play-state: running;
+}
+@keyframes comingSo {
+    0%{}
+    1%{
+        margin-left: 200px;
+        color: azure;
+    }
+    50%{
+        color: rgb(233, 228, 228);
+        margin-left: 120px;
+    }
+    80%{
+        margin-left: 50px;
+    }
+}
+@keyframes cardA {
+    0%{
+        margin-right: 200px;
+        margin-top: 300px;
+        color: azure;
+        border-radius: 300px;
+        background-color: rgb(235, 230, 230);
+    }
+    70%{
+        color: rgb(90, 84, 84);
+        border-radius: 160px;
+        background-color: rgb(235, 231, 231);
+
+    }
+}
