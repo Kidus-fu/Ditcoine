@@ -34,11 +34,6 @@ function App() {
       if(selectedText){ 
       navigator.clipboard.writeText(selectedText).then(() => {
         
-    }).catch(err => {
-        console.error('Failed to copy: ', err);
-    });}
-    }
-}
   return (
     <>
    <BrowserRouter>
