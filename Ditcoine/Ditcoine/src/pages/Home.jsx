@@ -20,21 +20,7 @@ function Home() {
       setV(l => l = false)
     }
   }, [window.innerWidth])
-  useEffect(() => {
-    api
-      .get("news/")
-      .then(res => res.data)
-      .then(data => console.log(data))
-    // api 
-    //   .post("news/",{
-    //     "catogore": 1,
-    //     "Title": "Test to React",
-    //     "discrption": "front-end"
-    //   })
-    //   .then((res) => res.data)
-    //   .then(data => console.log(data))
-   
-  }, [])
+  
   return (<>
     <NavBar />
     <div className="card bg-dark text-white">

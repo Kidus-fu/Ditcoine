@@ -19,6 +19,7 @@ class Catogores(models.Model):
     def __str__(self) -> str:
         return self.catogore
 class News(models.Model):
+    Image = models.ImageField(null=True,blank=True)
     catogore = models.ForeignKey(Catogores,on_delete=models.CASCADE,related_name="News")
     Title = models.CharField(max_length=200)
     discrption = models.TextField()

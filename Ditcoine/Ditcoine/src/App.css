@@ -19,6 +19,12 @@
         animation-fill-mode: initial;
         animation-play-state: running;
 }
+#NewsCard{
+  animation-name: NewsCard;
+        animation-duration: 2s;
+        animation-fill-mode: initial;
+        animation-play-state: running;
+}
 @keyframes comingSo {
     0%{}
     1%{
@@ -31,6 +37,45 @@
     }
     80%{
         margin-left: 50px;
+    }
+}
+.box2 {
+  position: absolute;
+  background-color: rgb(53, 50, 50);
+  color: rgb(192, 189, 189);
+  border-radius: 10px;
+  width: 200px;
+  display: none;
+ 
+}
+.f{
+  margin: 10px;
+  border: 2px;
+  border-color: aqua ;
+  cursor: pointer;
+}
+.f:hover{
+  background-color: rgb(90, 88, 88);
+  padding: 2px;
+  color: white;
+  border-radius: 5px;
+}
+@keyframes NewsCard {
+    0%{
+        margin-right: 500px;
+        margin-top: 800px;
+        margin-bottom: 800px;
+        margin-left: 500px;
+        padding: 1000px;
+        color: azure;
+        border-radius: 360px;
+        background-color: rgb(235, 230, 230);
+    }
+    70%{
+        color: rgb(0, 0, 0);
+        border-radius: 160px;
+        background-color: rgb(255, 255, 255);
+
     }
 }
 @keyframes cardA {
@@ -48,3 +93,32 @@
 
     }
 }
+ /* Rotate the spinner */
+ .spinner-border {
+    animation: spin 1.5s linear infinite;
+  }
+
+  /* Add pulse effect to the container */
+  .pulse-container {
+    animation: pulse 2s infinite;
+  }
+
+  /* Keyframes for spinning */
+  @keyframes spin {
+    100% {
+      transform: rotate(360deg);
+    }
+  }
+
+  /* Keyframes for pulsing */
+  @keyframes pulse {
+    0% {
+      transform: scale(1);
+    }
+    50% {
+      transform: scale(1.1);
+    }
+    100% {
+      transform: scale(1);
+    }
+  }

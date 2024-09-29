@@ -1,18 +1,66 @@
-import React from 'react';
+import React, { useEffect , useState } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import NavBar from '../compount/NavBar'
 import Footer from '../compount/Foter';
 const AboutUs = () => {
+  const [isFored,setisFored] = useState(false)
+
   const handleJoinTelegram = () => {
     window.open('https://t.me/Ditcoincrypto', '_blank');
   };
+  useEffect(() => {
+    if (history.forward !== null){
+      setisFored(true)
+    }
+    document.title = "Ditcoine | About Us"
+  },[])
+  const handleSharePage = () => {
+    const shareUrl = document.URL;
+    const shareText = "Ditcoin" // Adjust the URL structure as needed
 
+    if (navigator.share) {
+      // If the Web Share API is supported
+      navigator.share({
+        title: shareText,
+        url: shareUrl,
+      })
+      .then(() => console.log('Share successful'))
+      .catch((error) => console.log('Share failed:', error));
+    } else {
+      // Fallback for browsers that do not support the Web Share API
+      navigator.clipboard.writeText(shareUrl)
+        .then(() => alert('Link copied to clipboard!'))
+        .catch((err) => console.log('Could not copy text: ', err));
+    }
+  };
   return (
     <> 
     <NavBar />
-    <div className="container mt-5">
+    <div className="container mt-5" style={{position:"absolute"}} onContextMenu={e => {
+    e.preventDefault()
+    let Height = e.view.innerHeight
+    let scY = e.screenY
+    let box2 = document.querySelector(".box2")
+    if (Height - scY > 100 && e.view.innerWidth - e.screenX > 200){ 
+    box2.style.display = " block"
+    box2.style.top = e.pageY + "px";
+    box2.style.left = e.pageX + "px";
+    }else{
+      box2.style.display = " block"
+      box2.style.top = (e.pageY-300) + "px";
+      if (e.screenX > 600){
+        box2.style.left = (e.pageX-150) + "px";
+      }else{
+        box2.style.left = (e.pageX-20) + "px";
+      }
+    }
+
+  }} onClick={() => {
+    document.querySelector(".box2").style.display = "none"
+  }}>
       <h1 className="text-center mb-4">About Us</h1>
       <p>
+        {history.forward() ? "yes":"no"}
         Welcome to <strong>Ditcoin</strong>, your go-to source for the latest news and updates in the world of cryptocurrency and airdrops. 
         As the digital finance space continues to evolve at a rapid pace, Ditcoin is here to keep you informed and ahead of the curve. 
         Our platform is designed to bring you timely and accurate information about new coins, blockchain developments, and exclusive airdrop opportunities.
@@ -51,7 +99,38 @@ const AboutUs = () => {
         Together, we can unlock the full potential of digital assets and decentralized finance.
       </p>
     </div>
-    <Footer />
+    <div className="box2">
+            <div className="f " onClick={() => {
+              history.back()
+            }}><i className="fas fa-arrow-left me-2"></i>Back</div>
+            {isFored ? <div className="f" onClick={() => {
+              history.forward()
+            }}><i className="fas fa-arrow-right me-2"></i>Forward</div>:""}
+            <div className="f " onClick={() => {
+              setLoading(true)
+            }}><i className="fas fa-retweet me-2"></i>Refresh</div>
+            <div className="f"  onClick={() => {
+              const s = window.getSelection().toString()
+              if(s){
+                console.log(s)
+              }else{
+                console.log("a")
+              }
+            }}><i className="fas fa-copy me-2"></i>Copy-Ctrl + c</div>
+            <div className="f" onClick={() => {
+              handleSharePage()
+            }}><i className="fas fa-share-from-square me-2"></i>Share</div>
+            
+            <div className="f">cut</div>
+            <div className="f">cut</div>
+            <hr />
+            <div className="f">cut</div>
+            <div className="f" onClick={() => {
+              document.querySelector(".box2").style.display = "none"
+            }}> <i className="fas fa-x me-2"></i> Exit</div>
+   
+        </div>
+       
     </>
   );
 }

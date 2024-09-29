@@ -65,7 +65,7 @@ class NewsSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = News
-        fields = ['id', 'catogore', 'Title', 'discrption', 'created_at']
+        fields = ['id', 'catogore', 'Title', 'discrption', 'created_at',"Image"]
         
 # Serializer for the 'Comment' model
 class CommentSerializer(serializers.ModelSerializer):  # Nesting the news serializer

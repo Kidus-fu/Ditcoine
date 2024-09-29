@@ -1,28 +1,20 @@
-import { FaThumbsUp, FaThumbsDown, FaComment, FaShare } from "react-icons/fa";
-import NavBar from "./NavBar";
 import React, { useEffect, useState } from "react";
-
+import { useParams } from "react-router-dom";
+import api from "../api"; // Make sure you have your api setup
+import NavBar from "./NavBar";
 import Footer from "./Foter";
-import "../App.css"
-import api from "../api";
+
 import { Link } from "react-router-dom";
 
-const formatDate = (dateString) => {
-  const options = { year: "numeric", month: "long", day: "numeric" };
-  const date = new Date(dateString);
-  return date.toLocaleDateString(undefined, options);
-};
-
-const NewsCard = () => {
+const SingleNews = () => {
+  const { id } = useParams(); // Get the ID from the URL
+  const [newsItem, setNewsItem] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [data, setData] = useState([]);
-  const [getComment, setgetComment] = useState([]);
   const [user, setUser] = useState("Guest");
   const [visibleComments, setVisibleComments] = useState({});
-  const [erro , setError] = useState("")
-  const [isFored,setisFored] = useState(false)
-  const [Filter,setFilter] = useState(false)
-
+  const [getComment, setgetComment] = useState([]);
+  const [Data,setData] = useState([])
+  const [nowid,aetNowid]=useState()
   if (localStorage.getItem("Username") !== user) {
     setUser(localStorage.getItem("Username"));
   }
@@ -33,14 +25,13 @@ const NewsCard = () => {
       .then((res) => res.data)
       .then((data) => {
         setgetComment(data);
-        
       })
       .catch((err) => console.log(err));
   };
 
 
   useEffect(() => {
-    document.title =" Ditcoine | News"
+    
     GetComment()
     api
       .get("news/")
@@ -72,7 +63,7 @@ const NewsCard = () => {
         })
         .then(res => res.data)
         .then(data => {
-          
+          console.log(data);
           GetComment(); // Refreshes comments after posting
           setVisibleComments((prevState) => ({
             ...prevState,
@@ -102,9 +93,6 @@ const NewsCard = () => {
     return () => clearTimeout(refreshComments); // Cleanup on unmount
 }, []);
   useEffect(() => {
-    if (history.forward !== null){
-      setisFored(true)
-    }
     api
       .get("news/")
       .then((res) => res.data)
@@ -154,8 +142,31 @@ const NewsCard = () => {
       })
       .catch((err) => console.log(err));
   };
- 
-  // Function to handle sharing
+  useEffect(() => {
+   
+    api
+       .get("news/")
+       .then(res => res.data)
+       .then(data => {
+        setData(data)
+        console.log(data)
+       })
+       .catch(err => console.log(err))
+    const fetchSingleNews = async () => {
+      try {
+        const response = await api.get(`news/${id}/`); // Adjust the endpoint as needed
+        setNewsItem(response.data);
+        aetNowid(newsItem.id)
+      } catch (error) {
+        console.error("Error fetching news:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchSingleNews();
+  }, [id]);
+
   const handleShare = (newsItem) => {
     const shareUrl = `http://localhost:5173/news/${newsItem.id}`; // Adjust the URL structure as needed
     const shareText = `${newsItem.Title} - ${newsItem.discrption}`;
@@ -175,27 +186,6 @@ const NewsCard = () => {
         .catch((err) => console.log('Could not copy text: ', err));
     }
   };
-  const handleSharePage = () => {
-    const shareUrl = document.URL;
-    const shareText = "Ditcoin" // Adjust the URL structure as needed
-
-    if (navigator.share) {
-      // If the Web Share API is supported
-      navigator.share({
-        title: shareText,
-        url: shareUrl,
-      })
-      .then(() => console.log('Share successful'))
-      .catch((error) => console.log('Share failed:', error));
-    } else {
-      // Fallback for browsers that do not support the Web Share API
-      navigator.clipboard.writeText(shareUrl)
-        .then(() => alert('Link copied to clipboard!'))
-        .catch((err) => console.log('Could not copy text: ', err));
-    }
-  };
-
-
 
   if (loading) {
     return (
@@ -207,99 +197,23 @@ const NewsCard = () => {
     );
   }
 
-  return (
-    <>
-      <NavBar />
-     
-      <div className="container" style={{position:"absolute"}} onContextMenu={e => {
-    e.preventDefault()
-    let Height = e.view.innerHeight
-    let scY = e.screenY
-    let box2 = document.querySelector(".box2")
-    if (Height - scY > 100 && e.view.innerWidth - e.screenX > 200){ 
-      box2.style.display = " block"
-      box2.style.top = e.pageY + "px";
-      box2.style.left = e.pageX + "px";
-      }else{
-        box2.style.display = " block"
-        box2.style.top = (e.pageY-300) + "px";
-        if (e.screenX > 600){
-          box2.style.left = (e.pageX-250) + "px";
-        }else{
-          box2.style.left = (e.pageX-90) + "px";
-        }
-      }
+  if (!newsItem) {
+    return <div className="text-danger">News item not found.</div>;
+  }
 
-  }} onClick={() => {
-    document.querySelector(".box2").style.display = "none"
-  }}>
-        <div className="row" style={{position:"absolute"}}>
-       <div>
-        <button
-          type="button"
-          class="btn btn-primary rounded-pill mt-2 mb-3"
-          onClick={() => {
-            setFilter(1)
-          }}
-        >
-          AirDrop
-        </button>
-        <button
-          type="button"
-          class="btn btn-dark rounded-pill  me-2 mt-2 mb-3"
-          onClick={() => {
-            setFilter(2)
-          }}
-        >
-          Crypto 
-        </button>
-        <button
-          type="button"
-          class="btn btn-light rounded-pill  me-2 mt-2 mb-3"
-          onClick={() => {
-            setFilter(false)
-          }}
-        >
-          All 
-        </button>
-        
-       </div>
-          {data
-            .slice()
-            .filter(ne => Filter ? ne.catogore === Filter : ne === ne)
-            .reverse() // Reverses the order of news items
-            .map((newsItem) => (
-              <>
-              <div className="col-12 col-md-6 col-lg-4 mb-4"  key={newsItem.id}>
-                <div className="card bg-dark border border-secondary rounded" id="NewsCard" >
-                  
-                <Link to={`/news/${newsItem.id}`} className="text-light" >
-                  <img
-                    src={newsItem.Image ? newsItem.Image : "https://via.placeholder.com/150"}
-                    className="card-img-top img-fluid"
-                    alt={newsItem.Title}
-                    style={{ objectFit: "cover", height: "200px" }} // Ensures consistent image size
-                  />
-                  </Link>
-                
-
- 
-                  <div className="card-body">
-                    <h4 className="card-title text-light">
-                      {newsItem.Title}{" "}
-                      <small>{newsItem.catogore === 1 ? "Airdrop" : "Crypto"}</small>
-                    </h4>
-                    <p className="card-text text-light mb-3">{newsItem.discrption}</p>
-                    <small className="text-light">
-                      News Category: <u>{newsItem.catogore === 1 ? "Airdrop" : "Crypto currency"}</u>
-                    </small>
-                    
-                    <br />
-                    <span className="text-light">
-                      Created at: {formatDate(newsItem.created_at)}
-                    </span>
-                    <br />
-                    <div className="d-flex mt-3">
+  return (<> 
+    <NavBar />
+    <div className="container">
+    <p className="visually-hidden">{ document.title =` Ditcoin | ${newsItem.Title ? newsItem.Title : ""}`}</p>
+      <h1 className="text-light">{newsItem.Title}</h1>
+      <img src={newsItem.Image || "https://via.placeholder.com/150"} alt={newsItem.Title} className="img-fluid" />
+      <p className="text-light">{newsItem.discrption}</p>
+      <small className="text-light">Category: {newsItem.catogore === 1 ? "Airdrop" : "Crypto"}</small>
+      
+      <br />
+      <small className="text-light">Created at: {new Date(newsItem.created_at).toLocaleDateString()}</small>
+      
+      <div className="d-flex mt-3">
                       <i className="fa-solid fa-heart text-danger me-3"></i>
                       <i
                         className="fa-solid fa-comment ms-2 text-secondary me-3"
@@ -378,70 +292,43 @@ const NewsCard = () => {
                         onClick={() => handleCommentSubmit({ target: { dataset: { newsid: newsItem.id } } })}
                       ></i>
                     </div>
-                  </div>
+                    
+      <br />
+      <h4 className="mx-5 fs-2 mb-5 mt-4">More To <u>{newsItem.catogore === 1 ? "Airdrop" : "Crypto"}</u></h4>
+      <div class="card-group">
+      {Data
+            .slice()
+            .reverse() 
+            .filter(data => data.catogore === newsItem.catogore && data.id !== newsItem.id)
+            .map((newsItem) => 
+              (
+
+              <div class="card mx-2 ms-3 mb-3 rounded">
+                <Link to={`/news/${newsItem.id}`} className="text-light">
+                  <img
+                    src={newsItem.Image ? newsItem.Image : "https://via.placeholder.com/150"}
+                    className="card-img-top img-fluid"
+                    alt={newsItem.Title}
+                    style={{ objectFit: "cover", height: "150px" }} // Ensures consistent image size
+                  />
+                  </Link>
+                <div class="card-body">
+                  <h5 class="card-title">
+                  {newsItem.Title}{" "}
+                  <small>{newsItem.catogore === 1 ? "Airdrop" : "Crypto"}</small>
+                  </h5>
+                  <p class="card-text">{newsItem.discrption}</p>
+                 
+                  
                 </div>
               </div>
-              </>
+      
             ))}
-        </div>
-      </div>
-      <div className="box2">
-            <div className="f " onClick={() => {
-              history.back()
-            }}><i className="fas fa-arrow-left me-2"></i>Back</div>
-            {isFored ? <div className="f" onClick={() => {
-              history.forward()
-            }}><i className="fas fa-arrow-right me-2"></i>Forward</div>:""}
-            <div className="f " onClick={() => {
-              setLoading(true)
-              setFilter(false)
-            }}><i className="fas fa-retweet me-2"></i>Refresh</div>
-            <div className="f"  onClick={() => {
-              const s = window.getSelection().toString()
-              if(s){
-                console.log(s)
-              }else{
-                console.log("a")
-              }
-            }}><i className="fas fa-copy me-2"></i>Copy-Ctrl + c</div>
-            <div className="f" onClick={() => {
-              handleSharePage()
-            }}><i className="fas fa-share-from-square me-2"></i>Share</div>
-            
-            <div className="f">cut</div>
-            <div class=" f">
-              
-              <div
-                class="dropdown-toggle"
-                id="triggerId"
-                data-bs-toggle="dropdown"
-                aria-haspopup="true"
-                aria-expanded="false"
-              >
-                <small>dropdown</small>
-                
-              </div>
-              <div
-                class="dropdown-menu dropdown-menu-start"
-                aria-labelledby="triggerId"
-              >
-                <a class="dropdown-item" href="#">Action</a>
-                <a class="dropdown-item disabled" href="#">Disabled action</a>
-                <h6 class="dropdown-header">Section header</h6>
-                <a class="dropdown-item" href="#">Action</a>
-                <div class="dropdown-divider"></div>
-                <a class="dropdown-item" href="#">After divider action</a>
-              </div>
             </div>
-            <hr />
-            <div className="f">cut</div>
-            <div className="f" onClick={() => {
-              document.querySelector(".box2").style.display = "none"
-            }}> <i className="fas fa-x me-2"></i> Exit</div>
-        </div>
-    </>
-  );
-  
+            
+    </div>
+    <Footer />
+  </>);
 };
 
-export default NewsCard;
+export default SingleNews;
