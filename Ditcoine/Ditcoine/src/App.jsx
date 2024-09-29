@@ -17,23 +17,6 @@ import SingleNews from './compount/SingleNews'
 function App() {
  
   
-  document.onkeydown = function (e){
-    e.preventDefault()
-    console.log(e)
-    if (e.shiftKey && e.key === "ArrowLeft"){
-      history.back()
-    }
-    if (e.shiftKey && e.key === "ArrowRight"){
-      history.forward()
-    }
-    if (e.ctrlKey && e.key === "r"){
-      location.reload()
-    }
-    if (e.ctrlKey && e.key === "c"){
-      const selectedText = window.getSelection().toString();
-      if(selectedText){ 
-      navigator.clipboard.writeText(selectedText).then(() => {
-        
   return (
     <>
    <BrowserRouter>
